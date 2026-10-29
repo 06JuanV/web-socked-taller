@@ -7,9 +7,9 @@ que los mensajes sigan disponibles al volver a abrir o reiniciar el servidor.
 
 ## Datos de entrega
 
-- **Estudiante:** jhon misas, catalina troncoso, david mahecha, juan camilo lopez
-- **Códigos:**1:
-- **Materia / grupo:** pendiente de completar
+- **Estudiante:** Juan José Valencia, Catalina Troncoso, Jhon Alexander Misas, David Mahecha, Juan Camilo Lopez
+- **Códigos:** 2220242041, 2220242001, 2220242047, 2220242008, 2220242033
+- **Materia / grupo:** Ingeniería de Software
 - **Fecha:** 29/10/2026
 - **Repositorio propio de entrega:** <https://github.com/06JuanV/web-socked-taller>
 - **Versión de Node usada para validar:** v26.10.0
@@ -159,7 +159,7 @@ frecuencia de los avisos, agruparlos o usar salas para reducir destinatarios.
   credenciales al repositorio.
 - [x] Repositorio público: <https://github.com/06JuanV/web-socked-taller>
 - [x] Captura auténtica con dos usuarios: [capturas/chat.png](capturas/chat.png).
-- [ ] Completar los datos del estudiante y la materia.
+- [x] Completar los datos del estudiante y la materia.
 - [x] Historial con más de seis commits descriptivos.
 
 ## Fuentes

@@ -2,12 +2,21 @@ require('dotenv').config();
 
 const express = require('express');
 const http = require('http');
+const os = require('os');
 const path = require('path');
 const { MongoClient } = require('mongodb');
 const { Server } = require('socket.io');
 
 const MAX_NOMBRE_LENGTH = 30;
 const MAX_MENSAJE_LENGTH = 500;
+
+function getLocalNetworkAddresses(networkInterfaces = os.networkInterfaces()) {
+  return Object.values(networkInterfaces)
+    .flat()
+    .filter((address) => address && !address.internal
+      && (address.family === 'IPv4' || address.family === 4))
+    .map((address) => address.address);
+}
 
 function createInMemoryMessageStore() {
   const mensajes = [];
@@ -161,6 +170,15 @@ async function startServer() {
   const PORT = process.env.PORT || 3000;
   server.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
+
+    if (process.env.RENDER_EXTERNAL_URL) {
+      console.log(`Acceso desde Internet: ${process.env.RENDER_EXTERNAL_URL}`);
+      return;
+    }
+
+    for (const address of getLocalNetworkAddresses()) {
+      console.log(`Acceso desde la misma red: http://${address}:${PORT}`);
+    }
   });
 
   const cerrar = () => {
@@ -185,4 +203,5 @@ module.exports = {
   createChatServer,
   createInMemoryMessageStore,
   createMongoMessageStore,
+  getLocalNetworkAddresses,
 };

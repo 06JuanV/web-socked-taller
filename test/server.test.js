@@ -5,6 +5,7 @@ const {
   createChatServer,
   createInMemoryMessageStore,
   createMongoMessageStore,
+  getLocalNetworkAddresses,
 } = require('../server');
 
 function waitForEvent(socket, event) {
@@ -26,6 +27,19 @@ function join(socket, nombre) {
     socket.emit('entrar', nombre, resolve);
   });
 }
+
+test('muestra únicamente direcciones IPv4 de red, no direcciones internas', () => {
+  assert.deepEqual(getLocalNetworkAddresses({
+    Ethernet: [
+      { address: '192.168.1.25', family: 'IPv4', internal: false },
+      { address: '127.0.0.1', family: 'IPv4', internal: true },
+    ],
+    Tunnel: [
+      { address: '2001:db8::1', family: 'IPv6', internal: false },
+      { address: '10.0.0.8', family: 4, internal: false },
+    ],
+  }), ['192.168.1.25', '10.0.0.8']);
+});
 
 async function withChatServer(messageStore, callback) {
   const chat = createChatServer({ messageStore });

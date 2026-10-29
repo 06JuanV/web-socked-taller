@@ -53,6 +53,22 @@ persistido.
 En desarrollo puedes usar `npm run dev`; el archivo `.env` se mantiene local y
 está excluido de Git.
 
+### Conectar dos computadoras en la misma red
+
+1. Conecta ambos computadores a la misma red Wi-Fi o Ethernet.
+2. Ejecuta el servidor en el computador anfitrión con `npm start`. La terminal
+   mostrará una URL de red como `http://192.168.1.25:3000`.
+3. En el otro computador, abre esa URL en el navegador; reemplaza la IP de
+   ejemplo por la que mostró la terminal del servidor.
+4. Si Windows Firewall pregunta, permite Node.js en redes privadas. Si no
+   aparece la pregunta, permite el puerto TCP `3000` para la red **privada** en
+   la configuración del firewall. No abras ni reenvíes ese puerto en el router
+   para exponerlo a Internet.
+
+Esta modalidad funciona solo mientras el servidor está activo y los equipos
+pueden comunicarse dentro de la red. Para personas en redes distintas, despliega
+la aplicación en Render siguiendo la sección de más abajo.
+
 ## Eventos implementados
 
 | Evento | Lo emite | Lo escucha | Datos | Destinatario |
@@ -191,6 +207,8 @@ frecuencia de los avisos, agruparlos o usar salas para reducir destinatarios.
 - [ ] Desplegar el servicio de Render y configurar `MONGODB_URI` como secreto.
 - [ ] Probar conversación desde dos computadoras diferentes usando la URL de
   Render.
+- [ ] Si se prueba por LAN, confirmar acceso desde el segundo equipo con la URL
+  mostrada al arrancar.
 - [x] Repositorio público: <https://github.com/06JuanV/web-socked-taller>
 - [x] Captura auténtica con dos usuarios: [capturas/chat.png](capturas/chat.png).
 - [x] Completar los datos del estudiante y la materia.

@@ -9,10 +9,10 @@ cada usuario que entra.
 
 - **Estudiante:** 06JuanV, Catalina Troncoso
 - **Código:** pendiente de completar
-- **Materia / grupo:** pendiente de completar
+- **Materia / grupo:** ing de sofware
 - **Fecha:** 29/10/2026
 - **Repositorio propio de entrega:** <https://github.com/06JuanV/web-socked-taller>
-- **Versión de Node usada para validar:** v26.10.0
+- **Versión de Node usada para validar:** v26.10.0<\´axx–>
 
 > Completa tu nombre, código y materia antes de entregar. La URL indicada es el
 > repositorio público que compartiste.

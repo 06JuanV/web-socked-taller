@@ -19,7 +19,7 @@ cada usuario que entra.
 
 ## Requisitos
 
-- Node.js 18 o superior
+- Usar Node.js 18 o superior
 - npm
 
 ## Instalación y ejecución

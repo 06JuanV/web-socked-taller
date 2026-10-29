@@ -1,67 +1,100 @@
-// ============================================================
-//  TALLER: Chat en tiempo real con Socket.IO
-//  ARCHIVO: server.js  (lado servidor)
-// ============================================================
-//  Busca los comentarios "TODO" y complétalos.
-//  No borres los comentarios: son tu guía.
-// ============================================================
-
 const express = require('express');
 const http = require('http');
+const path = require('path');
 const { Server } = require('socket.io');
 
-const app = express();
-const server = http.createServer(app);
+const MAX_NOMBRE_LENGTH = 30;
+const MAX_MENSAJE_LENGTH = 500;
+const MAX_HISTORIAL = 20;
 
-// Socket.IO necesita "montarse" sobre el servidor HTTP,
-// porque el WebSocket nace de una petición HTTP que se "actualiza" (upgrade).
-const io = new Server(server);
+function createChatServer() {
+  const app = express();
+  const server = http.createServer(app);
+  const io = new Server(server);
+  const usuarios = new Map();
+  const historial = [];
 
-// Servimos la carpeta public como archivos estáticos (el frontend).
-app.use(express.static('public'));
+  app.use(express.static(path.join(__dirname, 'public')));
 
-// Lista en memoria de usuarios conectados: socket.id -> nombre
-const usuarios = new Map();
+  io.on('connection', (socket) => {
+    console.log('Se conectó:', socket.id);
 
-// ------------------------------------------------------------
-// io.on('connection') se dispara UNA VEZ por cada cliente que entra.
-// El objeto `socket` representa a ESE cliente en particular.
-// ------------------------------------------------------------
-io.on('connection', (socket) => {
-  console.log('Se conectó:', socket.id);
+    socket.on('entrar', (nombre, responder) => {
+      const nombreNormalizado = typeof nombre === 'string' ? nombre.trim() : '';
+      const nombreExiste = [...usuarios.values()].some(
+        (usuario) => usuario.toLocaleLowerCase('es') === nombreNormalizado.toLocaleLowerCase('es'),
+      );
+      let error;
 
-  // TODO 1 — Escuchar el evento 'entrar' que manda el cliente con su nombre.
-  //   - Guarda el nombre en el Map `usuarios`.
-  //   - Avisa a TODOS (io.emit) con el evento 'sistema' un mensaje tipo
-  //     `${nombre} se unió al chat`.
-  //   - Manda a todos la lista actualizada con el evento 'usuarios'
-  //     usando [...usuarios.values()]
-  //
-  // socket.on('entrar', (nombre) => { ... });
+      if (!nombreNormalizado) {
+        error = 'Escribe un nombre para entrar al chat.';
+      } else if (nombreNormalizado.length > MAX_NOMBRE_LENGTH) {
+        error = `El nombre debe tener ${MAX_NOMBRE_LENGTH} caracteres o menos.`;
+      } else if (nombreExiste) {
+        error = 'Ese nombre ya está conectado. Elige otro.';
+      } else if (usuarios.has(socket.id)) {
+        error = 'Ya ingresaste al chat.';
+      }
 
+      if (error) {
+        if (typeof responder === 'function') responder({ ok: false, error });
+        return;
+      }
 
-  // TODO 2 — Escuchar el evento 'mensaje' que manda el cliente.
-  //   Debes reenviarlo a todos con io.emit('mensaje', {...}) incluyendo:
-  //     { autor, texto, hora }   // hora: new Date().toISOString()
-  //   OJO: nunca confíes en el autor que manda el cliente;
-  //        tómalo de `usuarios.get(socket.id)`.
-  //
-  // socket.on('mensaje', (texto) => { ... });
+      usuarios.set(socket.id, nombreNormalizado);
+      socket.emit('historial', [...historial]);
+      io.emit('sistema', `${nombreNormalizado} se unió al chat`);
+      io.emit('usuarios', [...usuarios.values()]);
+      if (typeof responder === 'function') responder({ ok: true });
+    });
 
+    socket.on('mensaje', (texto) => {
+      const autor = usuarios.get(socket.id);
+      const textoNormalizado = typeof texto === 'string' ? texto.trim() : '';
 
-  // TODO 3 — Escuchar 'escribiendo' y avisar SOLO a los demás
-  //   (pista: socket.broadcast.emit, no io.emit).
+      if (!autor || !textoNormalizado) return;
+      if (textoNormalizado.length > MAX_MENSAJE_LENGTH) {
+        socket.emit('sistema', `El mensaje debe tener ${MAX_MENSAJE_LENGTH} caracteres o menos.`);
+        return;
+      }
 
+      const mensaje = {
+        autor,
+        texto: textoNormalizado,
+        hora: new Date().toISOString(),
+      };
 
-  // TODO 4 — Manejar la desconexión.
-  //   Evento 'disconnect': borra el usuario del Map, avisa por 'sistema'
-  //   y vuelve a mandar la lista de 'usuarios'.
-  socket.on('disconnect', () => {
-    console.log('Se desconectó:', socket.id);
+      historial.push(mensaje);
+      if (historial.length > MAX_HISTORIAL) historial.shift();
+      io.emit('mensaje', mensaje);
+    });
+
+    socket.on('escribiendo', () => {
+      const nombre = usuarios.get(socket.id);
+      if (nombre) socket.broadcast.emit('escribiendo', nombre);
+    });
+
+    socket.on('disconnect', () => {
+      const nombre = usuarios.get(socket.id);
+      usuarios.delete(socket.id);
+      console.log('Se desconectó:', socket.id);
+
+      if (nombre) {
+        io.emit('sistema', `${nombre} salió del chat`);
+        io.emit('usuarios', [...usuarios.values()]);
+      }
+    });
   });
-});
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+  return { app, server, io, usuarios };
+}
+
+if (require.main === module) {
+  const { server } = createChatServer();
+  const PORT = process.env.PORT || 3000;
+  server.listen(PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+  });
+}
+
+module.exports = { createChatServer };

@@ -7,7 +7,7 @@ cada usuario que entra.
 
 ## Datos de entrega
 
-- **Estudiante:** 06JuanV (falta confirmar nombre completo)
+- **Estudiante:** 06JuanV, Catalina Troncoso
 - **Código:** pendiente de completar
 - **Materia / grupo:** pendiente de completar
 - **Fecha:** 29/10/2026

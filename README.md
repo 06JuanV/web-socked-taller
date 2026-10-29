@@ -7,9 +7,9 @@ cada usuario que entra.
 
 ## Datos de entrega
 
-- **Estudiante:** 06JuanV, Catalina Troncoso, Jhon Misas
-- **Código:** pendiente de completar
-- **Materia / grupo:** pendiente de completar
+- **Estudiante:** Juan José Valencia, Catalina Troncoso, Jhon Alexander Misas, David Mahecha, Juan Camilo Lopez
+- **Código:** 2220242041, 2220242001, 2220242047, 2220242008, 2220242033
+- **Materia / grupo:** Ingeniería de Software
 - **Fecha:** 29/10/2026
 - **Repositorio propio de entrega:** <https://github.com/06JuanV/web-socked-taller>
 - **Versión de Node usada para validar:** v26.10.0

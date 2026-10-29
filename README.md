@@ -115,6 +115,36 @@ El historial se envía al usuario después de que este entra con su nombre; por
 eso, al reabrir el sitio se vuelve a escribir el nombre antes de ver los
 mensajes guardados.
 
+## Publicar para chatear desde computadoras distintas
+
+`localhost` solo es accesible desde la computadora donde se ejecuta el servidor.
+Para que dos personas en redes o equipos diferentes conversen, despliega el
+servidor y comparte la URL HTTPS que entrega Render. La página de GitHub Pages
+del taller es solo la guía, no aloja este servidor Socket.IO.
+
+El archivo `render.yaml` configura un servicio web de Render:
+
+1. En Render, crea un **Blueprint** y conecta el repositorio
+   `06JuanV/web-socked-taller`. Render leerá `render.yaml` y te solicitará
+   `MONGODB_URI`; pégala directamente en Render, nunca en el repositorio ni en
+   el chat.
+2. Usa la URI de tu clúster de MongoDB Atlas y conserva `MONGODB_DB` como
+   `chat_socketio`.
+3. En los ajustes de red de Atlas, autoriza las conexiones salientes del
+   servicio Render. Para pruebas académicas, si no puedes restringirlas a las
+   IPs de salida de Render, puedes permitir `0.0.0.0/0` temporalmente; usa un
+   usuario de base de datos dedicado con acceso solo a esa base y elimina esa
+   regla cuando termines.
+4. Espera a que el despliegue termine y abre la URL HTTPS de Render en dos
+   dispositivos. Entra con nombres diferentes y envía mensajes en ambas
+   direcciones. Ambos deben usar la misma URL.
+5. Para comprobar persistencia, guarda un mensaje, reinicia el servicio desde
+   Render y vuelve a entrar: el historial debe reaparecer desde Atlas.
+
+El plan gratuito de Render puede suspender el servicio cuando no recibe tráfico;
+la primera conexión posterior puede tardar mientras vuelve a arrancar. La
+persistencia de los mensajes permanece en Atlas.
+
 ## Capturas para la entrega
 
 ![Dos usuarios conectados y chateando](capturas/chat.png)
@@ -158,8 +188,9 @@ frecuencia de los avisos, agruparlos o usar salas para reducir destinatarios.
 - [x] `node_modules/` está excluido mediante `.gitignore`.
 - [x] La aplicación y las pruebas funcionan localmente (las pruebas usan un
   almacén aislado; para ejecutar el servidor real hay que configurar MongoDB).
-- [ ] Configurar `MONGODB_URI` en el entorno de ejecución/despliegue sin subir
-  credenciales al repositorio.
+- [ ] Desplegar el servicio de Render y configurar `MONGODB_URI` como secreto.
+- [ ] Probar conversación desde dos computadoras diferentes usando la URL de
+  Render.
 - [x] Repositorio público: <https://github.com/06JuanV/web-socked-taller>
 - [x] Captura auténtica con dos usuarios: [capturas/chat.png](capturas/chat.png).
 - [x] Completar los datos del estudiante y la materia.

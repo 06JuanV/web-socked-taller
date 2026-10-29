@@ -4,6 +4,8 @@
 **Prerrequisitos:** HTML, CSS y JavaScript básico. Node.js 18 o superior instalado.
 **Entrega:** repositorio de GitHub con el chat funcionando + capturas.
 
+> **Guía visual con la animación del flujo:** https://juanbonilla1305.github.io/taller-chat-socketio/
+
 ---
 
 ## 1. ¿Por qué WebSockets?

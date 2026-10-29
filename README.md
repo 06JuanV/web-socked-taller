@@ -14,8 +14,8 @@ que los mensajes sigan disponibles al volver a abrir o reiniciar el servidor.
 - **Repositorio propio de entrega:** <https://github.com/06JuanV/web-socked-taller>
 - **Versión de Node usada para validar:** v26.10.0
 
-> Completa tu nombre, código y materia antes de entregar. La URL indicada es el
-> repositorio público que compartiste.
+> Para ejecutar la aplicación, configura `MONGODB_URI` en el archivo local
+> `.env`; nunca publiques credenciales de MongoDB.
 
 ## Requisitos
 
@@ -38,7 +38,8 @@ npm install
    de esas credenciales para URL. No publiques el archivo `.env`.
    En MongoDB Atlas, crea un usuario de base de datos y autoriza la IP desde la
    que se ejecutará el servidor en **Network Access**.
-4. Inicia el servidor:
+4. Inicia MongoDB local si usas una instancia instalada en tu equipo.
+5. Inicia el servidor:
 
    ```bash
    npm start
@@ -69,6 +70,8 @@ colección `mensajes` de MongoDB guarda cada mensaje antes de difundirlo. La lis
 de usuarios activos sí vive en memoria y se reconstruye cuando las personas se
 conectan de nuevo. Los eventos informativos de entrada/salida no se guardan;
 se conserva el historial de mensajes de chat.
+
+Cada documento de `mensajes` contiene `autor`, `texto`, `hora` y `createdAt`.
 
 ## Retos del taller
 

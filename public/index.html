@@ -11,9 +11,10 @@
   <div id="login" class="card">
     <h1>Entrar al chat</h1>
     <form id="form-login">
-      <input id="input-nombre" placeholder="Tu nombre" autocomplete="off" required />
+      <input id="input-nombre" placeholder="Tu nombre" autocomplete="off" maxlength="30" required />
       <button type="submit">Entrar</button>
     </form>
+    <p id="error-login" class="error" role="status" aria-live="polite"></p>
   </div>
 
   <!-- Pantalla 2: el chat -->
@@ -27,7 +28,7 @@
       <ul id="mensajes"></ul>
       <p id="escribiendo" class="escribiendo"></p>
       <form id="form-mensaje">
-        <input id="input-mensaje" placeholder="Escribe un mensaje..." autocomplete="off" />
+        <input id="input-mensaje" placeholder="Escribe un mensaje..." autocomplete="off" maxlength="500" />
         <button type="submit">Enviar</button>
       </form>
     </main>

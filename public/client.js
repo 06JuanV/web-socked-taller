@@ -15,8 +15,10 @@ const inputMensaje = document.getElementById('input-mensaje');
 const mensajes = document.getElementById('mensajes');
 const listaUsuarios = document.getElementById('lista-usuarios');
 const escribiendo = document.getElementById('escribiendo');
+const errorLogin = document.getElementById('error-login');
 
 let miNombre = '';
+let temporizadorEscribiendo;
 
 // --- Entrar al chat -----------------------------------------
 formLogin.addEventListener('submit', (e) => {
@@ -24,12 +26,17 @@ formLogin.addEventListener('submit', (e) => {
   miNombre = inputNombre.value.trim();
   if (!miNombre) return;
 
-  // TODO 1 — Emitir el evento 'entrar' al servidor con miNombre.
-  // socket.emit(...)
+  errorLogin.textContent = '';
+  socket.emit('entrar', miNombre, (respuesta) => {
+    if (!respuesta.ok) {
+      errorLogin.textContent = respuesta.error;
+      return;
+    }
 
-  login.classList.add('oculto');
-  chat.classList.remove('oculto');
-  inputMensaje.focus();
+    login.classList.add('oculto');
+    chat.classList.remove('oculto');
+    inputMensaje.focus();
+  });
 });
 
 // --- Enviar mensaje -----------------------------------------
@@ -38,42 +45,51 @@ formMensaje.addEventListener('submit', (e) => {
   const texto = inputMensaje.value.trim();
   if (!texto) return;
 
-  // TODO 2 — Emitir el evento 'mensaje' con el texto.
-  // socket.emit(...)
-
+  socket.emit('mensaje', texto);
   inputMensaje.value = '';
 });
 
 // --- Avisar que estoy escribiendo ---------------------------
 inputMensaje.addEventListener('input', () => {
-  // TODO 3 — Emitir 'escribiendo' con miNombre.
+  if (inputMensaje.value.trim()) socket.emit('escribiendo');
 });
 
 // --- Recibir del servidor -----------------------------------
-
-// TODO 4 — Escuchar 'mensaje' y pintarlo con pintarMensaje(data).
-// socket.on('mensaje', (data) => { ... });
-
-// TODO 5 — Escuchar 'sistema' (texto) y pintarlo con pintarSistema(texto).
-
-// TODO 6 — Escuchar 'usuarios' (array de nombres) y pintar la lista
-//          en #lista-usuarios.
-
-// TODO 7 — Escuchar 'escribiendo' (nombre) y mostrar
-//          "Fulano está escribiendo..." durante 1.5 segundos.
+socket.on('mensaje', pintarMensaje);
+socket.on('historial', (historial) => {
+  historial.forEach(pintarMensaje);
+});
+socket.on('sistema', pintarSistema);
+socket.on('usuarios', (usuarios) => {
+  const elementos = usuarios.map((nombre) => {
+    const li = document.createElement('li');
+    li.textContent = nombre;
+    return li;
+  });
+  listaUsuarios.replaceChildren(...elementos);
+});
+socket.on('escribiendo', (nombre) => {
+  escribiendo.textContent = `${nombre} está escribiendo...`;
+  clearTimeout(temporizadorEscribiendo);
+  temporizadorEscribiendo = setTimeout(() => {
+    escribiendo.textContent = '';
+  }, 1500);
+});
 
 // --- Helpers (ya hechos, úsalos) ----------------------------
 
 function pintarMensaje({ autor, texto, hora }) {
   const li = document.createElement('li');
   li.className = autor === miNombre ? 'mensaje propio' : 'mensaje';
-  li.innerHTML = `
-    <span class="autor"></span>
-    <span class="texto"></span>
-    <time></time>`;
-  li.querySelector('.autor').textContent = autor;
-  li.querySelector('.texto').textContent = texto;
-  li.querySelector('time').textContent = formatearHora(hora);
+  const autorElemento = document.createElement('span');
+  autorElemento.className = 'autor';
+  autorElemento.textContent = autor;
+  const textoElemento = document.createElement('span');
+  textoElemento.className = 'texto';
+  textoElemento.textContent = texto;
+  const horaElemento = document.createElement('time');
+  horaElemento.textContent = formatearHora(hora);
+  li.append(autorElemento, textoElemento, horaElemento);
   mensajes.appendChild(li);
   mensajes.scrollTop = mensajes.scrollHeight;
 }

@@ -1,0 +1,155 @@
+:root {
+  --fondo: #0f172a;
+  --panel: #1e293b;
+  --borde: #334155;
+  --texto: #e2e8f0;
+  --suave: #94a3b8;
+  --acento: #38bdf8;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oculto { display: none !important; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 32px;
+  width: min(360px, 90vw);
+}
+
+.card h1 { margin: 0 0 20px; font-size: 20px; }
+
+form { display: flex; gap: 8px; }
+
+input {
+  flex: 1;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--borde);
+  background: #0b1220;
+  color: var(--texto);
+  font-size: 14px;
+}
+
+input:focus { outline: 2px solid var(--acento); outline-offset: -1px; }
+
+button {
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--acento);
+  color: #06283d;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#chat {
+  display: flex;
+  width: min(900px, 95vw);
+  height: min(600px, 90vh);
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+aside {
+  width: 200px;
+  border-right: 1px solid var(--borde);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+aside h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--suave);
+  margin: 0 0 12px;
+}
+
+#lista-usuarios { list-style: none; margin: 0; padding: 0; }
+
+#lista-usuarios li {
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+#lista-usuarios li::before {
+  content: "●";
+  color: #4ade80;
+  margin-right: 8px;
+  font-size: 10px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  min-width: 0;
+}
+
+#mensajes {
+  flex: 1;
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.mensaje {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  background: #0b1220;
+  border-radius: 10px;
+  max-width: 75%;
+  word-wrap: break-word;
+}
+
+.mensaje.propio {
+  margin-left: auto;
+  background: #0c4a6e;
+}
+
+.mensaje .autor {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--acento);
+}
+
+.mensaje time {
+  display: block;
+  font-size: 11px;
+  color: var(--suave);
+  margin-top: 2px;
+}
+
+.sistema {
+  text-align: center;
+  font-size: 12px;
+  color: var(--suave);
+  margin: 8px 0;
+  font-style: italic;
+}
+
+.escribiendo {
+  height: 16px;
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--suave);
+}

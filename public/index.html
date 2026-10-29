@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chat en tiempo real</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Pantalla 1: pedir el nombre -->
+  <div id="login" class="card">
+    <h1>Entrar al chat</h1>
+    <form id="form-login">
+      <input id="input-nombre" placeholder="Tu nombre" autocomplete="off" required />
+      <button type="submit">Entrar</button>
+    </form>
+  </div>
+
+  <!-- Pantalla 2: el chat -->
+  <div id="chat" class="oculto">
+    <aside>
+      <h2>Conectados</h2>
+      <ul id="lista-usuarios"></ul>
+    </aside>
+
+    <main>
+      <ul id="mensajes"></ul>
+      <p id="escribiendo" class="escribiendo"></p>
+      <form id="form-mensaje">
+        <input id="input-mensaje" placeholder="Escribe un mensaje..." autocomplete="off" />
+        <button type="submit">Enviar</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- Este archivo lo sirve Socket.IO automáticamente. No lo crees tú. -->
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>

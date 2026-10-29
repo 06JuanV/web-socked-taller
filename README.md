@@ -125,7 +125,8 @@ frecuencia de los avisos, agruparlos o usar salas para reducir destinatarios.
 - [x] Repositorio público: <https://github.com/06JuanV/web-socked-taller>
 - [x] Captura auténtica con dos usuarios: [capturas/chat.png](capturas/chat.png).
 - [ ] Completar los datos del estudiante y la materia.
-- [ ] Completar seis commits descriptivos; revisar el historial luego de publicar.
+- [x] Historial con siete commits descriptivos (incluye los dos commits base del
+  taller y cinco commits de esta entrega).
 
 ## Fuentes
 

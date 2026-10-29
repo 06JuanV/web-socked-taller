@@ -1,7 +1,11 @@
 const assert = require('node:assert/strict');
 const { test } = require('node:test');
 const { io: createClient } = require('socket.io-client');
-const { createChatServer } = require('../server');
+const {
+  createChatServer,
+  createInMemoryMessageStore,
+  createMongoMessageStore,
+} = require('../server');
 
 function waitForEvent(socket, event) {
   return new Promise((resolve) => socket.once(event, resolve));
@@ -23,14 +27,25 @@ function join(socket, nombre) {
   });
 }
 
-test('maneja ingreso, mensajes, escritura, historial y desconexión', async () => {
-  const { server, io, usuarios } = createChatServer();
+async function withChatServer(messageStore, callback) {
+  const chat = createChatServer({ messageStore });
   const clientes = [];
 
-  await new Promise((resolve) => server.listen(0, resolve));
-  const url = `http://localhost:${server.address().port}`;
+  await new Promise((resolve) => chat.server.listen(0, resolve));
+  const url = `http://localhost:${chat.server.address().port}`;
 
   try {
+    await callback({ ...chat, clientes, url });
+  } finally {
+    clientes.forEach((cliente) => cliente.disconnect());
+    await new Promise((resolve) => chat.io.close(resolve));
+  }
+}
+
+test('maneja ingreso, mensajes, escritura, historial y desconexión', async () => {
+  const messageStore = createInMemoryMessageStore();
+
+  await withChatServer(messageStore, async ({ clientes, url, usuarios }) => {
     const ana = await connect(url);
     clientes.push(ana);
     const anaHistorial = waitForEvent(ana, 'historial');
@@ -90,8 +105,8 @@ test('maneja ingreso, mensajes, escritura, historial y desconexión', async () =
     const mensajesAnteriores = await historialCarla;
     assert.equal(await sistemaCarla, 'Carla se unió al chat');
     assert.deepEqual(await usuariosCarla, ['Ana', 'Luis', 'Carla']);
-    assert.equal(mensajesAnteriores.length, 20);
-    assert.equal(mensajesAnteriores[0].texto, 'Mensaje 1');
+    assert.equal(mensajesAnteriores.length, 21);
+    assert.equal(mensajesAnteriores[0].texto, 'Mensaje 0');
     assert.equal(mensajesAnteriores.at(-1).texto, 'Mensaje 20');
     assert.equal(usuarios.size, 3);
 
@@ -101,8 +116,77 @@ test('maneja ingreso, mensajes, escritura, historial y desconexión', async () =
     assert.equal(await desconexionSistema, 'Luis salió del chat');
     assert.deepEqual(await desconexionUsuarios, ['Ana', 'Carla']);
     assert.equal(usuarios.size, 2);
-  } finally {
-    clientes.forEach((cliente) => cliente.disconnect());
-    await new Promise((resolve) => io.close(resolve));
-  }
+  });
+});
+
+test('recupera mensajes guardados después de iniciar otra instancia del servidor', async () => {
+  const messageStore = createInMemoryMessageStore();
+  let mensajeGuardado;
+
+  await withChatServer(messageStore, async ({ clientes, url }) => {
+    const ana = await connect(url);
+    clientes.push(ana);
+    const historial = waitForEvent(ana, 'historial');
+    assert.deepEqual(await join(ana, 'Ana'), { ok: true });
+    assert.deepEqual(await historial, []);
+
+    mensajeGuardado = waitForEvent(ana, 'mensaje');
+    ana.emit('mensaje', 'Este mensaje debe sobrevivir al servidor');
+    await mensajeGuardado;
+  });
+
+  await withChatServer(messageStore, async ({ clientes, url }) => {
+    const luis = await connect(url);
+    clientes.push(luis);
+    const historial = waitForEvent(luis, 'historial');
+    assert.deepEqual(await join(luis, 'Luis'), { ok: true });
+    assert.deepEqual(await historial, [
+      {
+        autor: 'Ana',
+        texto: 'Este mensaje debe sobrevivir al servidor',
+        hora: (await mensajeGuardado).hora,
+      },
+    ]);
+  });
+});
+
+test('el adaptador MongoDB guarda y recupera mensajes en orden cronológico', async () => {
+  const documentos = [];
+  const collection = {
+    async insertOne(documento) {
+      documentos.push(documento);
+    },
+    find(_query, options) {
+      assert.deepEqual(options, {
+        projection: { _id: 0, autor: 1, texto: 1, hora: 1 },
+      });
+      return {
+        sort(orden) {
+          assert.deepEqual(orden, { createdAt: 1, _id: 1 });
+          return {
+            async toArray() {
+              return documentos
+                .sort((a, b) => a.createdAt - b.createdAt)
+                .map(({ autor, texto, hora }) => ({ autor, texto, hora }));
+            },
+          };
+        },
+      };
+    },
+  };
+  const store = createMongoMessageStore(collection);
+  const primero = {
+    autor: 'Ana',
+    texto: 'Primero',
+    hora: '2026-10-29T10:00:00.000Z',
+  };
+  const segundo = {
+    autor: 'Luis',
+    texto: 'Segundo',
+    hora: '2026-10-29T10:01:00.000Z',
+  };
+
+  await store.save(primero);
+  await store.save(segundo);
+  assert.deepEqual(await store.getAll(), [primero, segundo]);
 });

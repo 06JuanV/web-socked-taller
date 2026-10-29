@@ -127,6 +127,9 @@ frecuencia de los avisos, agruparlos o usar salas para reducir destinatarios.
 - [ ] Completar los datos del estudiante y la materia.
 - [x] Historial con más de seis commits descriptivos.
 
+
+.
+
 ## Fuentes
 
 - [Documentación de Socket.IO](https://socket.io/docs/v4/)

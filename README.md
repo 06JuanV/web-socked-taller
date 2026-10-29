@@ -7,9 +7,15 @@ cada usuario que entra.
 
 ## Datos de entrega
 
+<<<<<<< HEAD
 - **Estudiante:** 06JuanV, Catalina Troncoso
 - **Código:** pendiente de completar
 - **Materia / grupo:** ing de sofware
+=======
+- **Estudiante:** Juan José Valencia, Catalina Troncoso, Jhon Alexander Misas, David Mahecha, Juan Camilo Lopez
+- **Código:** 2220242041, 2220242001, 2220242047, 2220242008, 2220242033
+- **Materia / grupo:** Ingeniería de Software
+>>>>>>> bb1c0d8005e9bbfa4954e881d842d13f9257e1c5
 - **Fecha:** 29/10/2026
 - **Repositorio propio de entrega:** <https://github.com/06JuanV/web-socked-taller>
 - **Versión de Node usada para validar:** v26.10.0<\´axx–>
@@ -126,6 +132,9 @@ frecuencia de los avisos, agruparlos o usar salas para reducir destinatarios.
 - [x] Captura auténtica con dos usuarios: [capturas/chat.png](capturas/chat.png).
 - [ ] Completar los datos del estudiante y la materia.
 - [x] Historial con más de seis commits descriptivos.
+
+
+.
 
 ## Fuentes
 
